@@ -22,5 +22,7 @@ namespace SpriteDrawer
         public int OffsetX { get; set; }
         [JsonProperty("offsetY")]
         public int OffsetY { get; set; }
+        [JsonProperty("duplicates")]
+        public int Duplicates { get; set; }
     }
 }
