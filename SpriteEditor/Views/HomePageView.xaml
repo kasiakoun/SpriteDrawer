@@ -81,9 +81,15 @@
                     <RowDefinition Height="*" />
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
-                <Slider x:Name="ScaleSlider" Value="1" Minimum="0.5" Maximum="6"
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <Slider x:Name="ScaleSlider"
+                        Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
+                        Value="1" Minimum="0.5" Maximum="6"
                         SmallChange="0.1" LargeChange="0.1" />
-                <ListBox Grid.Row="1"
+                <ListBox Grid.Row="1" Grid.Column="0"
                          ItemsSource="{Binding AvailableFrames}"
                          SelectedItem="{Binding SelectedFrame}"
                          PreviewMouseDown="CanvasItemsControl_OnPreviewMouseDown"
@@ -236,7 +242,13 @@
                         </Style>
                     </ListBox.ItemContainerStyle>
                 </ListBox>
-                <StatusBar Grid.Row="2">
+                <StackPanel Grid.Row="1" Grid.Column="1"
+                            Margin="5"
+                            HorizontalAlignment="Stretch">
+                    <TextBlock>Duplicates count:</TextBlock>
+                    <TextBox Text="{Binding SelectedFrame.Model.Duplicates, UpdateSourceTrigger=PropertyChanged}" />
+                </StackPanel>
+                <StatusBar Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2">
                     <StatusBarItem>
                         <TextBlock>
                             <TextBlock.Text>
