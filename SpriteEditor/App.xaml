@@ -5,7 +5,7 @@
                       xmlns:views="clr-namespace:MvvmCross.Platforms.Wpf.Views;assembly=MvvmCross.Platforms.Wpf"
                       xmlns:converters="clr-namespace:SpriteEditor.Converters"
                       xmlns:math="http://hexinnovation.com/math"
-                      StartupUri="Views/HostView.xaml">
+                      StartupUri="MainWindow.xaml">
     <views:MvxApplication.Resources>
         <converters:InvertValueConverter x:Key="InvertValueConverter" />
         <converters:ImageToRectConverter x:Key="ImageToRectConverter" />
