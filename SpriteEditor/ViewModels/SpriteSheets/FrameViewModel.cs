@@ -17,6 +17,45 @@ namespace SpriteEditor.ViewModels.SpriteSheets
             set => SetProperty(ref _isShown, value);
         }
 
+        public int X
+        {
+            get => Model.X;
+            set
+            {
+                Model.X = value;
+                RaisePropertyChanged(() => X);
+            }
+        }
+        public int Y
+        {
+            get => Model.Y;
+            set
+            {
+                Model.Y = value;
+                RaisePropertyChanged(() => Y);
+            }
+        }
+
+        public int Width
+        {
+            get => Model.Width;
+            set
+            {
+                Model.Width = value;
+                RaisePropertyChanged(() => Width);
+            }
+        }
+
+        public int Height
+        {
+            get => Model.Height;
+            set
+            {
+                Model.Height = value;
+                RaisePropertyChanged(() => Height);
+            }
+        }
+
         public FrameViewModel(Frame model)
         {
             Model = model;
