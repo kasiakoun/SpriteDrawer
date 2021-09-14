@@ -53,7 +53,26 @@
                             <TextBlock Text="{Binding Model.Name}" />
                             <HierarchicalDataTemplate.ItemTemplate>
                                 <HierarchicalDataTemplate ItemsSource="{Binding Path=Frames}" AlternationCount="100">
-                                    <TextBlock Text="{Binding Model.Name}" />
+                                    <StackPanel>
+                                        <TextBlock x:Name="AnimationNameReadonly"
+                                                   Text="{Binding Model.Name}"
+                                                   PreviewMouseLeftButtonDown="UIElement_OnMouseDoubleClick" />
+                                        <TextBox Text="{Binding Model.Name}"
+                                                 KeyDown="UIElement_OnKeyDown"
+                                                 IsVisibleChanged="UIElement_OnIsVisibleChanged"
+                                                 LostFocus="UIElement_OnLostFocus">
+                                            <TextBox.Style>
+                                                <Style TargetType="{x:Type TextBox}">
+                                                    <Setter Property="Visibility" Value="Collapsed" />
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding Path=IsVisible, ElementName=AnimationNameReadonly}" Value="False">
+                                                            <Setter Property="Visibility" Value="Visible" />
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TextBox.Style>
+                                        </TextBox>
+                                    </StackPanel>
                                     <HierarchicalDataTemplate.ItemTemplate>
                                         <DataTemplate>
                                             <StackPanel Orientation="Horizontal">

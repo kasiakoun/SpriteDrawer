@@ -62,5 +62,56 @@ namespace SpriteEditor.Views
             listBox.Focus();
             Debug.WriteLine(DateTime.Now);
         }
+
+        private void UIElement_OnKeyDown(object sender, KeyEventArgs e)
+        {
+            var textBox = sender as TextBox;
+
+            if (textBox == null) return;
+            if (_editingTextBlock == null) return;
+
+            if (e.Key == Key.Enter)
+            {
+                _editingTextBlock.Visibility = Visibility.Visible;
+                _editingTextBlock = null;
+            }
+        }
+
+        private TextBlock _editingTextBlock;
+
+        private void UIElement_OnMouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            var textBlock = sender as TextBlock;
+
+            if (textBlock == null) return;
+            if (e.LeftButton != MouseButtonState.Pressed || e.ClickCount < 2) return;
+
+            _editingTextBlock = textBlock;
+            _editingTextBlock.Visibility = Visibility.Collapsed;
+
+            e.Handled = true;
+        }
+
+        private void UIElement_OnIsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            var textBox = sender as TextBox;
+
+            if (textBox == null) return;
+            if (!Convert.ToBoolean(e.NewValue)) return;
+
+            textBox.Focus();
+            textBox.CaretIndex = textBox.Text.Length;
+        }
+
+        private void UIElement_OnLostFocus(object sender, RoutedEventArgs e)
+        {
+            var textBox = sender as TextBox;
+
+            if (textBox == null) return;
+            if (_editingTextBlock == null) return;
+
+            _editingTextBlock.Visibility = Visibility.Visible;
+            _editingTextBlock = null;
+        }
     }
 }
