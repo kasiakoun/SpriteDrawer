@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace SpriteDrawer
 {
@@ -9,6 +10,6 @@ namespace SpriteDrawer
         [JsonProperty("name")]
         public string Name { get; set; }
         [JsonProperty("animations")]
-        public Animation[] Animations { get; set; }
+        public List<Animation> Animations { get; set; }
     }
 }
