@@ -48,6 +48,12 @@
                     <e:Interaction.Behaviors>
                         <behaviors:BindableSelectedItemBehavior SelectedItem="{Binding SelectedItem, Mode=TwoWay}" />
                     </e:Interaction.Behaviors>
+                    <TreeView.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem Header="Add animation" Command="{Binding AddAnimationCommand}" />
+                            <MenuItem Header="Add frame" Command="{Binding AddFrameCommand}" />
+                        </ContextMenu>
+                    </TreeView.ContextMenu>
                     <TreeView.ItemTemplate>
                         <HierarchicalDataTemplate ItemsSource="{Binding Path=Animations}">
                             <TextBlock Text="{Binding Model.Name}" />
@@ -167,8 +173,8 @@
                     <ListBox.ItemTemplate>
                         <DataTemplate>
                             <Grid>
-                                <Grid Height="{Binding Model.Height}"
-                                      Width="{Binding Model.Width}">
+                                <Grid Height="{Binding Height}"
+                                      Width="{Binding Width}">
                                     <Grid.Background>
                                         <ImageBrush ImageSource="{Binding Path=DataContext.SpriteBitmap,
                                                                           RelativeSource={RelativeSource AncestorType={x:Type ListBox}}}"
@@ -179,8 +185,8 @@
                                                                        RelativeSource={RelativeSource AncestorType={x:Type ListBox}},
                                                                        Converter={StaticResource ImageToRectConverter}}">
                                             <ImageBrush.Transform>
-                                                <TranslateTransform X="{Binding Model.X, Converter={StaticResource InvertValueConverter}}"
-                                                                    Y="{Binding Model.Y, Converter={StaticResource InvertValueConverter}}" />
+                                                <TranslateTransform X="{Binding X, Converter={StaticResource InvertValueConverter}}"
+                                                                    Y="{Binding Y, Converter={StaticResource InvertValueConverter}}" />
                                             </ImageBrush.Transform>
                                         </ImageBrush>
                                     </Grid.Background>
@@ -205,8 +211,8 @@
                                         </Style>
                                     </Border.Style>
                                     <Rectangle Stretch="None"
-                                               Width="{Binding Model.Width}"
-                                               Height="{Binding Model.Height}"
+                                               Width="{Binding Width}"
+                                               Height="{Binding Height}"
                                                Margin="0, 0, -1, -1" />
                                 </Border>
                             </Grid>
@@ -306,7 +312,9 @@
                         </Style>
                     </ScrollViewer.Style>
                     <ListBox ItemsSource="{Binding AvailableFrames}"
-                             SelectedItem="{Binding SelectedFrame}">
+                             SelectedItem="{Binding SelectedFrame}"
+                             IsSynchronizedWithCurrentItem="True"
+                             SelectionMode="Single">
                         <ListBox.Template>
                             <ControlTemplate>
                                 <Grid>
@@ -324,7 +332,10 @@
                                     <Canvas Width="{Binding ActualWidth, ElementName=image}"
                                             Height="{Binding ActualHeight, ElementName=image}"
                                             UseLayoutRounding="True"
-                                            IsItemsHost="True">
+                                            IsItemsHost="True"
+                                            PreviewMouseLeftButtonDown="Canvas_OnPreviewMouseLeftButtonDown"
+                                            MouseMove="Canvas_OnMouseMove"
+                                            MouseLeave="Canvas_OnMouseLeave">
                                         <Canvas.LayoutTransform>
                                             <ScaleTransform ScaleX="{Binding Value, ElementName=ScaleSlider}"
                                                             ScaleY="{Binding Value, ElementName=ScaleSlider}" />
@@ -394,8 +405,12 @@
                                     </Setter.Value>
                                 </Setter>
                                 <Setter Property="Padding" Value="0" />
-                                <Setter Property="Canvas.Left" Value="{Binding X}" />
-                                <Setter Property="Canvas.Top" Value="{Binding Y}" />
+                                <Setter Property="Canvas.Left" Value="{Binding X, Mode=TwoWay}" />
+                                <Setter Property="Canvas.Top" Value="{Binding Y, Mode=TwoWay}" />
+                                <Setter Property="AllowDrop" Value="True" />
+                                <Setter Property="Cursor" Value="Hand" />
+                                <EventSetter Event="PreviewMouseLeftButtonDown" Handler="ListBoxItem_OnPreviewMouseLeftButtonDown" />
+                                <EventSetter Event="PreviewMouseLeftButtonUp" Handler="ListBoxItem_OnPreviewMouseLeftButtonUp" />
                             </Style>
                         </ListBox.ItemContainerStyle>
                     </ListBox>

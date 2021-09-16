@@ -113,5 +113,59 @@ namespace SpriteEditor.Views
             _editingTextBlock.Visibility = Visibility.Visible;
             _editingTextBlock = null;
         }
+
+        private ListBoxItem _draggableListBoxItem;
+        private Point _startPoint;
+        private double _left;
+        private double _top;
+
+        private void ListBoxItem_OnPreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            var listBoxItem = sender as ListBoxItem;
+            if (listBoxItem == null) return;
+
+            _draggableListBoxItem = listBoxItem;
+            _left = Canvas.GetLeft(_draggableListBoxItem);
+            _top = Canvas.GetTop(_draggableListBoxItem);
+        }
+        private void ListBoxItem_OnPreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            _draggableListBoxItem = null;
+        }
+
+        private void Canvas_OnMouseMove(object sender, MouseEventArgs e)
+        {
+            var canvas = sender as Canvas;
+
+            if (_draggableListBoxItem == null) return;
+            if (canvas == null) return;
+
+            var newPoint = Mouse.GetPosition(canvas);
+
+            var newLeft = _left + Math.Round(newPoint.X - _startPoint.X);
+            var newTop = _top + Math.Round(newPoint.Y - _startPoint.Y);
+
+            Canvas.SetLeft(_draggableListBoxItem, newLeft);
+            Canvas.SetTop(_draggableListBoxItem, newTop);
+
+            e.Handled = true;
+        }
+
+        private void Canvas_OnPreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            var canvas = sender as Canvas;
+            if (canvas == null) return;
+
+            _startPoint = Mouse.GetPosition(canvas);
+        }
+
+        private void Canvas_OnMouseLeave(object sender, MouseEventArgs e)
+        {
+            var canvas = sender as Canvas;
+            if (canvas == null) return;
+
+            _draggableListBoxItem = null;
+            e.Handled = true;
+        }
     }
 }

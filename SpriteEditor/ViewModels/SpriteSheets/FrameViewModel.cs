@@ -11,6 +11,8 @@ namespace SpriteEditor.ViewModels.SpriteSheets
         private bool _isShown;
         public Frame Model { get; }
 
+        public AnimationViewModel Parent { get; }
+
         public bool IsShown
         {
             get => _isShown;
@@ -56,9 +58,10 @@ namespace SpriteEditor.ViewModels.SpriteSheets
             }
         }
 
-        public FrameViewModel(Frame model)
+        public FrameViewModel(Frame model, AnimationViewModel parent)
         {
             Model = model;
+            Parent = parent;
         }
     }
 }
