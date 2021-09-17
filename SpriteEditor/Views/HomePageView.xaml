@@ -1,4 +1,4 @@
-﻿<views:MvxWpfView x:Class="SpriteEditor.Views.HomePageView"
+<views:MvxWpfView x:Class="SpriteEditor.Views.HomePageView"
                  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -314,7 +314,9 @@
                     <ListBox ItemsSource="{Binding AvailableFrames}"
                              SelectedItem="{Binding SelectedFrame}"
                              IsSynchronizedWithCurrentItem="True"
-                             SelectionMode="Single">
+                             SelectionMode="Single"
+                             MouseLeave="ListBox_OnMouseLeave"
+                             MouseMove="ListBox_OnMouseMove">
                         <ListBox.Template>
                             <ControlTemplate>
                                 <Grid>
@@ -333,9 +335,7 @@
                                             Height="{Binding ActualHeight, ElementName=image}"
                                             UseLayoutRounding="True"
                                             IsItemsHost="True"
-                                            PreviewMouseLeftButtonDown="Canvas_OnPreviewMouseLeftButtonDown"
-                                            MouseMove="Canvas_OnMouseMove"
-                                            MouseLeave="Canvas_OnMouseLeave">
+                                            PreviewMouseLeftButtonDown="Canvas_OnPreviewMouseLeftButtonDown">
                                         <Canvas.LayoutTransform>
                                             <ScaleTransform ScaleX="{Binding Value, ElementName=ScaleSlider}"
                                                             ScaleY="{Binding Value, ElementName=ScaleSlider}" />

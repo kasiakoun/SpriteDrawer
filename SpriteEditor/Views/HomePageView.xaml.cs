@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
@@ -128,19 +128,20 @@ namespace SpriteEditor.Views
             _left = Canvas.GetLeft(_draggableListBoxItem);
             _top = Canvas.GetTop(_draggableListBoxItem);
         }
+
         private void ListBoxItem_OnPreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
             _draggableListBoxItem = null;
         }
 
-        private void Canvas_OnMouseMove(object sender, MouseEventArgs e)
+        private void ListBox_OnMouseMove(object sender, MouseEventArgs e)
         {
-            var canvas = sender as Canvas;
+            var listBox = sender as ListBox;
 
             if (_draggableListBoxItem == null) return;
-            if (canvas == null) return;
+            if (listBox == null) return;
 
-            var newPoint = Mouse.GetPosition(canvas);
+            var newPoint = Mouse.GetPosition(listBox);
 
             var newLeft = _left + Math.Round(newPoint.X - _startPoint.X);
             var newTop = _top + Math.Round(newPoint.Y - _startPoint.Y);
@@ -159,7 +160,7 @@ namespace SpriteEditor.Views
             _startPoint = Mouse.GetPosition(canvas);
         }
 
-        private void Canvas_OnMouseLeave(object sender, MouseEventArgs e)
+        private void ListBox_OnMouseLeave(object sender, MouseEventArgs e)
         {
             var canvas = sender as Canvas;
             if (canvas == null) return;
