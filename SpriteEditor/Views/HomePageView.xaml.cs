@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
@@ -8,6 +8,7 @@ using System.Windows.Shapes;
 using MvvmCross.Platforms.Wpf.Presenters.Attributes;
 using MvvmCross.Platforms.Wpf.Views;
 using MvvmCross.ViewModels;
+using SpriteEditor.Helpers;
 using SpriteEditor.ViewModels;
 
 namespace SpriteEditor.Views
@@ -116,20 +117,30 @@ namespace SpriteEditor.Views
 
         private ListBoxItem _draggableListBoxItem;
         private Point _startPoint;
-        private double _left;
-        private double _top;
+        private double _startLeft;
+        private double _startTop;
+        private double _startWidth;
+        private double _startHeight;
+        private TransformOperation _transformOperation;
 
         private void ListBoxItem_OnPreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             var listBoxItem = sender as ListBoxItem;
             if (listBoxItem == null) return;
 
+            var touchedPoint = Mouse.GetPosition(listBoxItem);
+            _transformOperation = GetTransformOperationByPosition(touchedPoint, listBoxItem.ActualWidth, listBoxItem.ActualHeight);
+
             _draggableListBoxItem = listBoxItem;
-            _left = Canvas.GetLeft(_draggableListBoxItem);
-            _top = Canvas.GetTop(_draggableListBoxItem);
+            _startLeft = Canvas.GetLeft(_draggableListBoxItem);
+            _startTop = Canvas.GetTop(_draggableListBoxItem);
+
+            var frameRectangle = GetFrameRectangle(_draggableListBoxItem);
+            _startWidth = frameRectangle.Width;
+            _startHeight = frameRectangle.Height;
         }
 
-        private void ListBoxItem_OnPreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        private void ListBox_OnPreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
             _draggableListBoxItem = null;
         }
@@ -142,22 +153,67 @@ namespace SpriteEditor.Views
             if (listBox == null) return;
 
             var newPoint = Mouse.GetPosition(listBox);
-
-            var newLeft = _left + Math.Round(newPoint.X - _startPoint.X);
-            var newTop = _top + Math.Round(newPoint.Y - _startPoint.Y);
-
-            Canvas.SetLeft(_draggableListBoxItem, newLeft);
-            Canvas.SetTop(_draggableListBoxItem, newTop);
+            var frameRectangle = GetFrameRectangle(_draggableListBoxItem);
+            TransformRectangleByCurrentPosition(newPoint, frameRectangle);
 
             e.Handled = true;
         }
 
-        private void Canvas_OnPreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        private void TransformRectangleByCurrentPosition(Point newPoint, Rectangle frameRectangle)
         {
-            var canvas = sender as Canvas;
-            if (canvas == null) return;
+            var leftOffset = Math.Round(newPoint.X - _startPoint.X) / ScaleSlider.Value;
+            var topOffset = Math.Round(newPoint.Y - _startPoint.Y) / ScaleSlider.Value;
 
-            _startPoint = Mouse.GetPosition(canvas);
+            var newLeft = _startLeft + leftOffset;
+            var newTop = _startTop + topOffset;
+
+            if (_transformOperation == TransformOperation.LeftSide)
+            {
+                if (_startWidth - leftOffset <= 0) return;
+
+                Canvas.SetLeft(_draggableListBoxItem, newLeft);
+                frameRectangle.Width = _startWidth - leftOffset;
+            }
+            else if (_transformOperation == TransformOperation.RightSide)
+            {
+                if (_startWidth + leftOffset <= 0) return;
+
+                frameRectangle.Width = _startWidth + leftOffset;
+            }
+            else if (_transformOperation == TransformOperation.TopSide)
+            {
+                if (_startHeight - topOffset <= 0) return;
+
+                Canvas.SetTop(_draggableListBoxItem, newTop);
+                frameRectangle.Height = _startHeight - topOffset;
+            }
+            else if (_transformOperation == TransformOperation.BottomSide)
+            {
+                if (_startHeight + topOffset <= 0) return;
+
+                frameRectangle.Height = _startHeight + topOffset;
+            }
+            else if (_transformOperation == TransformOperation.Center)
+            {
+                Canvas.SetLeft(_draggableListBoxItem, newLeft);
+                Canvas.SetTop(_draggableListBoxItem, newTop);
+            }
+        }
+
+        private Rectangle GetFrameRectangle(ListBoxItem listBoxItem)
+        {
+            var contentPresenter = VisualChildHelper.FindVisualChild<ContentPresenter>(listBoxItem);
+            var contentTemplate = contentPresenter.ContentTemplate;
+
+            return (Rectangle)contentTemplate.FindName("FrameRectangle", contentPresenter);
+        }
+
+        private void ListBox_OnPreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            var listBox = sender as ListBox;
+            if (listBox == null) return;
+
+            _startPoint = Mouse.GetPosition(listBox);
         }
 
         private void ListBox_OnMouseLeave(object sender, MouseEventArgs e)
@@ -167,6 +223,53 @@ namespace SpriteEditor.Views
 
             _draggableListBoxItem = null;
             e.Handled = true;
+        }
+
+        private void ListBoxItem_OnMouseMove(object sender, MouseEventArgs e)
+        {
+            var listBoxItem = sender as ListBoxItem;
+            if (listBoxItem == null) return;
+            if (_draggableListBoxItem != null) return;
+
+            var touchedPoint = Mouse.GetPosition(listBoxItem);
+
+            listBoxItem.Cursor = GetCursorByPosition(touchedPoint, listBoxItem.ActualWidth, listBoxItem.ActualHeight);
+        }
+
+        private Cursor GetCursorByPosition(Point touchedPoint, double actualWidth, double actualHeight)
+        {
+            var transformOperation = GetTransformOperationByPosition(touchedPoint, actualWidth, actualHeight);
+            return transformOperation switch
+            {
+                TransformOperation.LeftSide => Cursors.SizeWE,
+                TransformOperation.RightSide => Cursors.SizeWE,
+                TransformOperation.TopSide => Cursors.SizeNS,
+                TransformOperation.BottomSide => Cursors.SizeNS,
+                _ => Cursors.Hand
+            };
+        }
+
+        private TransformOperation GetTransformOperationByPosition(Point touchedPoint, double actualWidth, double actualHeight)
+        {
+            const int toleranceValue = 5;
+            if (actualWidth - touchedPoint.X < toleranceValue)
+            {
+                return TransformOperation.RightSide;
+            }
+            if (touchedPoint.X < toleranceValue)
+            {
+                return TransformOperation.LeftSide;
+            }
+            if (actualHeight - touchedPoint.Y < toleranceValue)
+            {
+                return TransformOperation.BottomSide;
+            }
+            if (touchedPoint.Y < toleranceValue)
+            {
+                return TransformOperation.TopSide;
+            }
+
+            return TransformOperation.Center;
         }
     }
 }

@@ -1,4 +1,4 @@
-<views:MvxWpfView x:Class="SpriteEditor.Views.HomePageView"
+﻿<views:MvxWpfView x:Class="SpriteEditor.Views.HomePageView"
                  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -316,7 +316,9 @@
                              IsSynchronizedWithCurrentItem="True"
                              SelectionMode="Single"
                              MouseLeave="ListBox_OnMouseLeave"
-                             MouseMove="ListBox_OnMouseMove">
+                             MouseMove="ListBox_OnMouseMove"
+                             PreviewMouseLeftButtonDown="ListBox_OnPreviewMouseLeftButtonDown"
+                             PreviewMouseLeftButtonUp="ListBox_OnPreviewMouseLeftButtonUp">
                         <ListBox.Template>
                             <ControlTemplate>
                                 <Grid>
@@ -334,8 +336,7 @@
                                     <Canvas Width="{Binding ActualWidth, ElementName=image}"
                                             Height="{Binding ActualHeight, ElementName=image}"
                                             UseLayoutRounding="True"
-                                            IsItemsHost="True"
-                                            PreviewMouseLeftButtonDown="Canvas_OnPreviewMouseLeftButtonDown">
+                                            IsItemsHost="True">
                                         <Canvas.LayoutTransform>
                                             <ScaleTransform ScaleX="{Binding Value, ElementName=ScaleSlider}"
                                                             ScaleY="{Binding Value, ElementName=ScaleSlider}" />
@@ -365,9 +366,10 @@
                                             </Style.Triggers>
                                         </Style>
                                     </Border.Style>
-                                    <Rectangle Stretch="None"
-                                               Width="{Binding Width}"
-                                               Height="{Binding Height}"
+                                    <Rectangle x:Name="FrameRectangle"
+                                               Stretch="None"
+                                               Width="{Binding Width, Mode=TwoWay}"
+                                               Height="{Binding Height, Mode=TwoWay}"
                                                Margin="0, 0, -1, -1"/>
                                 </Border>
                             </DataTemplate>
@@ -408,9 +410,8 @@
                                 <Setter Property="Canvas.Left" Value="{Binding X, Mode=TwoWay}" />
                                 <Setter Property="Canvas.Top" Value="{Binding Y, Mode=TwoWay}" />
                                 <Setter Property="AllowDrop" Value="True" />
-                                <Setter Property="Cursor" Value="Hand" />
                                 <EventSetter Event="PreviewMouseLeftButtonDown" Handler="ListBoxItem_OnPreviewMouseLeftButtonDown" />
-                                <EventSetter Event="PreviewMouseLeftButtonUp" Handler="ListBoxItem_OnPreviewMouseLeftButtonUp" />
+                                <EventSetter Event="PreviewMouseMove" Handler="ListBoxItem_OnMouseMove" />
                             </Style>
                         </ListBox.ItemContainerStyle>
                     </ListBox>
