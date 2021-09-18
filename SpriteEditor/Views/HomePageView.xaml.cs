@@ -166,8 +166,55 @@ namespace SpriteEditor.Views
 
             var newLeft = _startLeft + leftOffset;
             var newTop = _startTop + topOffset;
-
-            if (_transformOperation == TransformOperation.LeftSide)
+            if (_transformOperation == TransformOperation.LeftTopCorner)
+            {
+                if (_startWidth - leftOffset > 0)
+                {
+                    Canvas.SetLeft(_draggableListBoxItem, newLeft);
+                    frameRectangle.Width = _startWidth - leftOffset;
+                }
+                if (_startHeight - topOffset > 0)
+                {
+                    Canvas.SetTop(_draggableListBoxItem, newTop);
+                    frameRectangle.Height = _startHeight - topOffset;
+                }
+            }
+            else if (_transformOperation == TransformOperation.RightTopCorner)
+            {
+                if (_startWidth + leftOffset > 0)
+                {
+                    frameRectangle.Width = _startWidth + leftOffset;
+                }
+                if (_startHeight - topOffset > 0)
+                {
+                    Canvas.SetTop(_draggableListBoxItem, newTop);
+                    frameRectangle.Height = _startHeight - topOffset;
+                }
+            }
+            else if (_transformOperation == TransformOperation.RightBottomCorner)
+            {
+                if (_startWidth + leftOffset > 0)
+                {
+                    frameRectangle.Width = _startWidth + leftOffset;
+                }
+                if (_startHeight + topOffset > 0)
+                {
+                    frameRectangle.Height = _startHeight + topOffset;
+                }
+            }
+            else if (_transformOperation == TransformOperation.LeftBottomCorner)
+            {
+                if (_startWidth - leftOffset > 0)
+                {
+                    Canvas.SetLeft(_draggableListBoxItem, newLeft);
+                    frameRectangle.Width = _startWidth - leftOffset;
+                }
+                if (_startHeight + topOffset > 0)
+                {
+                    frameRectangle.Height = _startHeight + topOffset;
+                }
+            }
+            else if (_transformOperation == TransformOperation.LeftSide)
             {
                 if (_startWidth - leftOffset <= 0) return;
 
@@ -245,6 +292,10 @@ namespace SpriteEditor.Views
                 TransformOperation.RightSide => Cursors.SizeWE,
                 TransformOperation.TopSide => Cursors.SizeNS,
                 TransformOperation.BottomSide => Cursors.SizeNS,
+                TransformOperation.LeftTopCorner => Cursors.SizeNWSE,
+                TransformOperation.RightTopCorner => Cursors.SizeNESW,
+                TransformOperation.RightBottomCorner => Cursors.SizeNWSE,
+                TransformOperation.LeftBottomCorner => Cursors.SizeNESW,
                 _ => Cursors.Hand
             };
         }
@@ -252,6 +303,22 @@ namespace SpriteEditor.Views
         private TransformOperation GetTransformOperationByPosition(Point touchedPoint, double actualWidth, double actualHeight)
         {
             const int toleranceValue = 5;
+            if (touchedPoint.X < toleranceValue && touchedPoint.Y < toleranceValue)
+            {
+                return TransformOperation.LeftTopCorner;
+            }
+            if (actualWidth - touchedPoint.X < toleranceValue && touchedPoint.Y < toleranceValue)
+            {
+                return TransformOperation.RightTopCorner;
+            }
+            if (actualWidth - touchedPoint.X < toleranceValue && actualHeight - touchedPoint.Y < toleranceValue)
+            {
+                return TransformOperation.RightBottomCorner;
+            }
+            if (touchedPoint.X < toleranceValue && actualHeight - touchedPoint.Y < toleranceValue)
+            {
+                return TransformOperation.LeftBottomCorner;
+            }
             if (actualWidth - touchedPoint.X < toleranceValue)
             {
                 return TransformOperation.RightSide;

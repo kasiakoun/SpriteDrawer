@@ -10,6 +10,10 @@ namespace SpriteEditor.Views
         LeftSide = 1,
         TopSide = 2,
         RightSide = 3,
-        BottomSide = 4
+        BottomSide = 4,
+        LeftTopCorner = 5,
+        RightTopCorner = 6,
+        RightBottomCorner = 7,
+        LeftBottomCorner = 8
     }
 }
