@@ -37,59 +37,108 @@
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="*" MinWidth="300" />
             </Grid.ColumnDefinitions>
-            <TreeView Grid.Column="0"
-                      ItemsSource="{Binding SpriteSheets}">
-                <e:Interaction.Behaviors>
-                    <behaviors:BindableSelectedItemBehavior SelectedItem="{Binding SelectedItem, Mode=TwoWay}" />
-                </e:Interaction.Behaviors>
-                <TreeView.ItemTemplate>
-                    <HierarchicalDataTemplate ItemsSource="{Binding Path=Animations}">
-                        <TextBlock Text="{Binding Model.Name}" />
-                        <HierarchicalDataTemplate.ItemTemplate>
-                            <HierarchicalDataTemplate ItemsSource="{Binding Path=Frames}" AlternationCount="100">
-                                <TextBlock Text="{Binding Model.Name}" />
-                                <HierarchicalDataTemplate.ItemTemplate>
-                                    <DataTemplate>
-                                        <StackPanel Orientation="Horizontal">
-                                            <CheckBox IsChecked="{Binding IsShown}" Focusable="False" />
-                                            <TextBlock Text="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type TreeViewItem}, AncestorLevel=1},
-                                                                      Path=(ItemsControl.AlternationIndex)}"
-                                                       Width="100" />
-                                        </StackPanel>
-                                    </DataTemplate>
-                                </HierarchicalDataTemplate.ItemTemplate>
-                            </HierarchicalDataTemplate>
-                        </HierarchicalDataTemplate.ItemTemplate>
-                    </HierarchicalDataTemplate>
-                </TreeView.ItemTemplate>
-            </TreeView>
+            <Grid Grid.Column="0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <TreeView Grid.Row="0"
+                          ItemsSource="{Binding SpriteSheets}">
+                    <e:Interaction.Behaviors>
+                        <behaviors:BindableSelectedItemBehavior SelectedItem="{Binding SelectedItem, Mode=TwoWay}" />
+                    </e:Interaction.Behaviors>
+                    <TreeView.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem Header="Add animation" Command="{Binding AddAnimationCommand}" />
+                            <MenuItem Header="Add frame" Command="{Binding AddFrameCommand}" />
+                        </ContextMenu>
+                    </TreeView.ContextMenu>
+                    <TreeView.ItemTemplate>
+                        <HierarchicalDataTemplate ItemsSource="{Binding Path=Animations}">
+                            <TextBlock Text="{Binding Model.Name}" />
+                            <HierarchicalDataTemplate.ItemTemplate>
+                                <HierarchicalDataTemplate ItemsSource="{Binding Path=Frames}" AlternationCount="100">
+                                    <StackPanel>
+                                        <TextBlock x:Name="AnimationNameReadonly"
+                                                   Text="{Binding Model.Name}"
+                                                   PreviewMouseLeftButtonDown="UIElement_OnMouseDoubleClick" />
+                                        <TextBox Text="{Binding Model.Name}"
+                                                 KeyDown="UIElement_OnKeyDown"
+                                                 IsVisibleChanged="UIElement_OnIsVisibleChanged"
+                                                 LostFocus="UIElement_OnLostFocus">
+                                            <TextBox.Style>
+                                                <Style TargetType="{x:Type TextBox}">
+                                                    <Setter Property="Visibility" Value="Collapsed" />
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding Path=IsVisible, ElementName=AnimationNameReadonly}" Value="False">
+                                                            <Setter Property="Visibility" Value="Visible" />
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TextBox.Style>
+                                        </TextBox>
+                                    </StackPanel>
+                                    <HierarchicalDataTemplate.ItemTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Orientation="Horizontal">
+                                                <CheckBox IsChecked="{Binding IsShown}" Focusable="False" />
+                                                <TextBlock Text="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type TreeViewItem}, AncestorLevel=1},
+                                                                          Path=(ItemsControl.AlternationIndex)}"
+                                                           Width="100" />
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </HierarchicalDataTemplate.ItemTemplate>
+                                </HierarchicalDataTemplate>
+                            </HierarchicalDataTemplate.ItemTemplate>
+                        </HierarchicalDataTemplate>
+                    </TreeView.ItemTemplate>
+                </TreeView>
+                <GridSplitter Grid.Row="1" 
+                              VerticalAlignment="Center"
+                              HorizontalAlignment="Stretch"
+                              Height="3" />
+                <StackPanel Grid.Row="2"
+                            Margin="5"
+                            HorizontalAlignment="Stretch">
+                    <TextBlock>Background offset X</TextBlock>
+                    <TextBox Text="{Binding SelectedFrame.X, UpdateSourceTrigger=LostFocus, Mode=TwoWay}" />
+                    <TextBlock>Background offset Y</TextBlock>
+                    <TextBox Text="{Binding SelectedFrame.Y, UpdateSourceTrigger=LostFocus, Mode=TwoWay}" />
+
+                    <TextBlock>Width</TextBlock>
+                    <TextBox Text="{Binding SelectedFrame.Width, UpdateSourceTrigger=LostFocus, Mode=TwoWay}" />
+                    <TextBlock>Height</TextBlock>
+                    <TextBox Text="{Binding SelectedFrame.Height, UpdateSourceTrigger=LostFocus, Mode=TwoWay}" />
+
+                    <TextBlock>Duplicates count</TextBlock>
+                    <TextBox Text="{Binding SelectedFrame.Model.Duplicates, UpdateSourceTrigger=PropertyChanged}" />
+                </StackPanel>
+            </Grid>
             <GridSplitter Grid.Column="1" 
                           VerticalAlignment="Stretch"
                           HorizontalAlignment="Center"
                           Width="3" />
-            <!--<ScrollViewer Grid.Column="2"
-                          HorizontalScrollBarVisibility="Auto"
-                          VerticalScrollBarVisibility="Auto">
-                <Canvas Width="{Binding ActualWidth, ElementName=image}" Height="{Binding ActualHeight, ElementName=image}">
-                    <Image x:Name="image" Source="{Binding SpriteBitmap}" Height="Auto" Width="Auto" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"></Image>
-                </Canvas>
-            </ScrollViewer>-->
-
             <Grid Grid.Column="2">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="*" />
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="Auto" />
-                </Grid.ColumnDefinitions>
-                <Slider x:Name="ScaleSlider"
-                        Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
-                        Value="1" Minimum="0.5" Maximum="6"
-                        SmallChange="0.1" LargeChange="0.1" />
-                <ListBox Grid.Row="1" Grid.Column="0"
+                <DockPanel Grid.Row="0"
+                           LastChildFill="True">
+                    <ComboBox x:Name="ModeSelector"
+                              Width="100"
+                              Margin="5">
+                        <ComboBoxItem IsSelected="True">Offset editor</ComboBoxItem>
+                        <ComboBoxItem>Frames editor</ComboBoxItem>
+                    </ComboBox>
+                    <Slider x:Name="ScaleSlider"
+                            Margin="5"
+                            Value="1" Minimum="0.5" Maximum="6"
+                            SmallChange="0.1" LargeChange="0.1" />
+                </DockPanel>
+                <ListBox Grid.Row="1"
                          ItemsSource="{Binding AvailableFrames}"
                          SelectedItem="{Binding SelectedFrame}"
                          PreviewMouseDown="CanvasItemsControl_OnPreviewMouseDown"
@@ -97,9 +146,20 @@
                          KeyboardNavigation.IsTabStop="True"
                          IsSynchronizedWithCurrentItem="True"
                          Focusable="True">
+                    <ListBox.Style>
+                        <Style TargetType="{x:Type ListBox}">
+                            <Setter Property="Visibility" Value="Collapsed" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Path=SelectedItem.Content, ElementName=ModeSelector}" Value="Offset editor">
+                                    <Setter Property="Visibility" Value="Visible" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </ListBox.Style>
                     <ListBox.ItemsPanel>
                         <ItemsPanelTemplate>
-                            <Canvas x:Name="MainCanvas" UseLayoutRounding="True"
+                            <Canvas x:Name="MainCanvas"
+                                    UseLayoutRounding="True"
                                     HorizontalAlignment="Stretch"
                                     VerticalAlignment="Stretch"
                                     Focusable="True">
@@ -113,12 +173,8 @@
                     <ListBox.ItemTemplate>
                         <DataTemplate>
                             <Grid>
-                                <Grid Height="{Binding Model.Height}"
-                                      Width="{Binding Model.Width}">
-                                    <!--<Grid.RenderTransform>
-                                        <TranslateTransform X="{Binding Path=DataContext.InitialPosition.X, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"
-                                                            Y="{Binding Path=DataContext.InitialPosition.Y, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"/>
-                                    </Grid.RenderTransform>-->
+                                <Grid Height="{Binding Height}"
+                                      Width="{Binding Width}">
                                     <Grid.Background>
                                         <ImageBrush ImageSource="{Binding Path=DataContext.SpriteBitmap,
                                                                           RelativeSource={RelativeSource AncestorType={x:Type ListBox}}}"
@@ -129,8 +185,8 @@
                                                                        RelativeSource={RelativeSource AncestorType={x:Type ListBox}},
                                                                        Converter={StaticResource ImageToRectConverter}}">
                                             <ImageBrush.Transform>
-                                                <TranslateTransform X="{Binding Model.X, Converter={StaticResource InvertValueConverter}}"
-                                                                    Y="{Binding Model.Y, Converter={StaticResource InvertValueConverter}}" />
+                                                <TranslateTransform X="{Binding X, Converter={StaticResource InvertValueConverter}}"
+                                                                    Y="{Binding Y, Converter={StaticResource InvertValueConverter}}" />
                                             </ImageBrush.Transform>
                                         </ImageBrush>
                                     </Grid.Background>
@@ -155,8 +211,8 @@
                                         </Style>
                                     </Border.Style>
                                     <Rectangle Stretch="None"
-                                               Width="{Binding Model.Width}"
-                                               Height="{Binding Model.Height}"
+                                               Width="{Binding Width}"
+                                               Height="{Binding Height}"
                                                Margin="0, 0, -1, -1" />
                                 </Border>
                             </Grid>
@@ -242,13 +298,125 @@
                         </Style>
                     </ListBox.ItemContainerStyle>
                 </ListBox>
-                <StackPanel Grid.Row="1" Grid.Column="1"
-                            Margin="5"
-                            HorizontalAlignment="Stretch">
-                    <TextBlock>Duplicates count:</TextBlock>
-                    <TextBox Text="{Binding SelectedFrame.Model.Duplicates, UpdateSourceTrigger=PropertyChanged}" />
-                </StackPanel>
-                <StatusBar Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2">
+                <ScrollViewer Grid.Row="1"
+                              HorizontalScrollBarVisibility="Auto"
+                              VerticalScrollBarVisibility="Auto">
+                    <ScrollViewer.Style>
+                        <Style TargetType="{x:Type ScrollViewer}">
+                            <Setter Property="Visibility" Value="Collapsed" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Path=SelectedItem.Content, ElementName=ModeSelector}" Value="Frames editor">
+                                    <Setter Property="Visibility" Value="Visible" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </ScrollViewer.Style>
+                    <ListBox ItemsSource="{Binding AvailableFrames}"
+                             SelectedItem="{Binding SelectedFrame}"
+                             IsSynchronizedWithCurrentItem="True"
+                             SelectionMode="Single"
+                             MouseLeave="ListBox_OnMouseLeave"
+                             MouseMove="ListBox_OnMouseMove"
+                             PreviewMouseLeftButtonDown="ListBox_OnPreviewMouseLeftButtonDown"
+                             PreviewMouseLeftButtonUp="ListBox_OnPreviewMouseLeftButtonUp">
+                        <ListBox.Template>
+                            <ControlTemplate>
+                                <Grid>
+                                    <Image x:Name="image"
+                                           Source="{Binding SpriteBitmap}"
+                                           Height="Auto" Width="Auto"
+                                           HorizontalAlignment="Stretch"
+                                           VerticalAlignment="Stretch"
+                                           UseLayoutRounding="True">
+                                        <Image.LayoutTransform>
+                                            <ScaleTransform ScaleX="{Binding Value, ElementName=ScaleSlider}"
+                                                            ScaleY="{Binding Value, ElementName=ScaleSlider}" />
+                                        </Image.LayoutTransform>
+                                    </Image>
+                                    <Canvas Width="{Binding ActualWidth, ElementName=image}"
+                                            Height="{Binding ActualHeight, ElementName=image}"
+                                            UseLayoutRounding="True"
+                                            IsItemsHost="True">
+                                        <Canvas.LayoutTransform>
+                                            <ScaleTransform ScaleX="{Binding Value, ElementName=ScaleSlider}"
+                                                            ScaleY="{Binding Value, ElementName=ScaleSlider}" />
+                                        </Canvas.LayoutTransform>
+                                    </Canvas>
+                                </Grid>
+                            </ControlTemplate>
+                        </ListBox.Template>
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <Border BorderThickness="1"
+                                        Opacity="0.3"
+                                        Margin="-1, -1, 0, 0">
+                                    <Border.Style>
+                                        <Style TargetType="{x:Type Border}">
+                                            <Setter Property="BorderBrush" Value="Black" />
+                                            <Style.Triggers>
+                                                <DataTrigger Value="True">
+                                                    <DataTrigger.Binding>
+                                                        <MultiBinding Converter="{StaticResource AreEqualConverter}">
+                                                            <Binding Path="." />
+                                                            <Binding Path="DataContext.SelectedFrame" RelativeSource="{RelativeSource AncestorType={x:Type ItemsControl}}" />
+                                                        </MultiBinding>
+                                                    </DataTrigger.Binding>
+                                                    <Setter Property="BorderBrush" Value="DarkRed" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Border.Style>
+                                    <Rectangle x:Name="FrameRectangle"
+                                               Stretch="None"
+                                               Width="{Binding Width, Mode=TwoWay}"
+                                               Height="{Binding Height, Mode=TwoWay}"
+                                               Margin="0, 0, -1, -1"/>
+                                </Border>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                        <ListBox.ItemContainerStyle>
+                            <Style TargetType="{x:Type ListBoxItem}">
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="{x:Type ListBoxItem}">
+                                            <Border x:Name="Bd"
+                                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                                    BorderThickness="{TemplateBinding BorderThickness}"
+                                                    Background="{TemplateBinding Background}"
+                                                    Padding="{TemplateBinding Padding}"
+                                                    SnapsToDevicePixels="true">
+                                                <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                                                  SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
+                                                                  VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                                            </Border>
+                                            <ControlTemplate.Triggers>
+                                                <Trigger Property="IsSelected" Value="true">
+                                                    <Setter Property="Background" TargetName="Bd" Value="Transparent"/>
+                                                    <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.HighlightTextBrushKey}}"/>
+                                                </Trigger>
+                                                <MultiTrigger>
+                                                    <MultiTrigger.Conditions>
+                                                        <Condition Property="IsSelected" Value="true"/>
+                                                        <Condition Property="Selector.IsSelectionActive" Value="false"/>
+                                                    </MultiTrigger.Conditions>
+                                                    <Setter Property="Background" TargetName="Bd" Value="Transparent"/>
+                                                    <Setter Property="Foreground" Value="Transparent"/>
+                                                </MultiTrigger>
+                                            </ControlTemplate.Triggers>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                                <Setter Property="Padding" Value="0" />
+                                <Setter Property="Canvas.Left" Value="{Binding X, Mode=TwoWay}" />
+                                <Setter Property="Canvas.Top" Value="{Binding Y, Mode=TwoWay}" />
+                                <Setter Property="AllowDrop" Value="True" />
+                                <EventSetter Event="PreviewMouseLeftButtonDown" Handler="ListBoxItem_OnPreviewMouseLeftButtonDown" />
+                                <EventSetter Event="PreviewMouseMove" Handler="ListBoxItem_OnMouseMove" />
+                            </Style>
+                        </ListBox.ItemContainerStyle>
+                    </ListBox>
+                </ScrollViewer>
+                <StatusBar Grid.Row="2">
                     <StatusBarItem>
                         <TextBlock>
                             <TextBlock.Text>

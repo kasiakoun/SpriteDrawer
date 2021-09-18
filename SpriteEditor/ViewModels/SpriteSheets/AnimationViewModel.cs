@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
 using MvvmCross.ViewModels;
@@ -13,10 +14,23 @@ namespace SpriteEditor.ViewModels.SpriteSheets
 
         public MvxObservableCollection<FrameViewModel> Frames { get; }
 
-        public AnimationViewModel(Animation model)
+        public SpriteSheetViewModel Parent { get; }
+
+        public AnimationViewModel(Animation model, SpriteSheetViewModel parent)
         {
             Model = model;
-            Frames = new MvxObservableCollection<FrameViewModel>(model.Frames.Select(p => new FrameViewModel(p)));
+            Parent = parent;
+            Frames = new MvxObservableCollection<FrameViewModel>(model.Frames?.Select(p => new FrameViewModel(p, this)));
+            Frames.CollectionChanged += FramesOnCollectionChanged;
+        }
+
+        private void FramesOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            if (e.Action == NotifyCollectionChangedAction.Add)
+            {
+                var newFrame = e.NewItems[0] as FrameViewModel;
+                Model.Frames.Add(newFrame.Model);
+            }
         }
     }
 }

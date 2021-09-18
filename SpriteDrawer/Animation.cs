@@ -14,6 +14,6 @@ namespace SpriteDrawer
         [JsonProperty("repeatAnimation")]
         public bool RepeatAnimation { get; set; }
         [JsonProperty("frames")]
-        public Frame[] Frames { get; set; }
+        public List<Frame> Frames { get; set; }
     }
 }
