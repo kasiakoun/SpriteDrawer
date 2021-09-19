@@ -19,18 +19,22 @@ namespace SpriteEditor.ViewModels
     {
         private readonly SpriteSheetConverter _loader = new SpriteSheetConverter();
 
+        private MvxObservableCollection<SpriteSheetViewModel> _spriteSheets;
+
         private object _selectedItem;
         private FrameViewModel _selectedFrame;
         private SpriteSheetViewModel _selectedSpriteSheet;
         private AnimationViewModel _selectedAnimation;
+
         private string _lastAssetsPath;
 
         private MvxCommand _saveCommand;
         private MvxCommand _openCommand;
+        private MvxCommand _addSpriteCommand;
         private MvxCommand _addAnimationCommand;
         private MvxCommand _addFrameCommand;
 
-        public List<SpriteSheetViewModel> SpriteSheets
+        public MvxObservableCollection<SpriteSheetViewModel> SpriteSheets
         {
             get => _spriteSheets;
             private set => SetProperty(ref _spriteSheets, value);
@@ -39,7 +43,6 @@ namespace SpriteEditor.ViewModels
         public List<FrameViewModel> AvailableFrames => SelectedSpriteSheet?.Animations?.SelectMany(p => p.Frames).ToList();
 
         public readonly Dictionary<string, BitmapImage> BitmapImageDictionary = new Dictionary<string, BitmapImage>();
-        private List<SpriteSheetViewModel> _spriteSheets;
 
         public object SelectedItem
         {
@@ -94,6 +97,7 @@ namespace SpriteEditor.ViewModels
 
         public MvxCommand SaveCommand => _saveCommand ?? (new MvxCommand(SaveFile));
         public MvxCommand OpenCommand => _openCommand ?? (new MvxCommand(OpenFolder));
+        public MvxCommand AddSpriteCommand => _addSpriteCommand ?? (new MvxCommand(AddSprite));
         public MvxCommand AddAnimationCommand => _addAnimationCommand ?? (new MvxCommand(AddAnimation));
         public MvxCommand AddFrameCommand => _addFrameCommand ?? (new MvxCommand(AddFrame));
 
@@ -131,7 +135,7 @@ namespace SpriteEditor.ViewModels
                 FillBitmap(spriteSheet);
             }
 
-            SpriteSheets = spriteSheets;
+            SpriteSheets = new MvxObservableCollection<SpriteSheetViewModel>(spriteSheets);
             SelectedItem = SpriteSheets[0];
         }
 
@@ -199,8 +203,17 @@ namespace SpriteEditor.ViewModels
             }
         }
 
+        public void AddSprite()
+        {
+            var emptySprite = CreateEmptySprite();
+            SpriteSheets.Add(emptySprite);
+            RaisePropertyChanged(() => AvailableFrames);
+        }
+
         public void AddAnimation()
         {
+            if (SelectedSpriteSheet == null) return;
+
             var emptyAnimation = CreateEmptyAnimation(SelectedSpriteSheet);
             SelectedSpriteSheet.Animations.Add(emptyAnimation);
             RaisePropertyChanged(() => AvailableFrames);
@@ -208,9 +221,22 @@ namespace SpriteEditor.ViewModels
 
         public void AddFrame()
         {
+            if (SelectedAnimation == null) return;
+
             var emptyFrame = CreateEmptyFrame(SelectedAnimation);
             SelectedAnimation.Frames.Add(emptyFrame);
             RaisePropertyChanged(() => AvailableFrames);
+        }
+
+        private SpriteSheetViewModel CreateEmptySprite()
+        {
+            var emptySprite = new SpriteSheet
+            {
+                Animations = new List<Animation>(),
+                Name = "empty"
+            };
+
+            return new SpriteSheetViewModel(emptySprite);
         }
 
         private AnimationViewModel CreateEmptyAnimation(SpriteSheetViewModel parent)

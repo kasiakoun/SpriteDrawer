@@ -1,4 +1,4 @@
-<views:MvxWpfView x:Class="SpriteEditor.Views.HomePageView"
+﻿<views:MvxWpfView x:Class="SpriteEditor.Views.HomePageView"
                  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -55,13 +55,33 @@
                     </e:Interaction.Behaviors>
                     <TreeView.ContextMenu>
                         <ContextMenu>
+                            <MenuItem Header="Add sprite" Command="{Binding AddSpriteCommand}" />
                             <MenuItem Header="Add animation" Command="{Binding AddAnimationCommand}" />
                             <MenuItem Header="Add frame" Command="{Binding AddFrameCommand}" />
                         </ContextMenu>
                     </TreeView.ContextMenu>
                     <TreeView.ItemTemplate>
                         <HierarchicalDataTemplate ItemsSource="{Binding Path=Animations}">
-                            <TextBlock Text="{Binding Model.Name}" />
+                            <StackPanel>
+                                <TextBlock x:Name="AnimationNameReadonly"
+                                           Text="{Binding Name}"
+                                           PreviewMouseLeftButtonDown="UIElement_OnMouseDoubleClick" />
+                                <TextBox Text="{Binding Name}"
+                                         KeyDown="UIElement_OnKeyDown"
+                                         IsVisibleChanged="UIElement_OnIsVisibleChanged"
+                                         LostFocus="UIElement_OnLostFocus">
+                                    <TextBox.Style>
+                                        <Style TargetType="{x:Type TextBox}">
+                                            <Setter Property="Visibility" Value="Collapsed" />
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding Path=IsVisible, ElementName=AnimationNameReadonly}" Value="False">
+                                                    <Setter Property="Visibility" Value="Visible" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBox.Style>
+                                </TextBox>
+                            </StackPanel>
                             <HierarchicalDataTemplate.ItemTemplate>
                                 <HierarchicalDataTemplate ItemsSource="{Binding Path=Frames}" AlternationCount="100">
                                     <StackPanel>
