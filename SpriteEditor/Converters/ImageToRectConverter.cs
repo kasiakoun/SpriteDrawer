@@ -13,6 +13,8 @@ namespace SpriteEditor.Converters
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             var image = value as BitmapImage;
+            if (image == null) return null;;
+
             return new Rect(0, 0, image.Width, image.Height);
         }
 

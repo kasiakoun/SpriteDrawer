@@ -10,6 +10,7 @@
     <PackageReference Include="MathConverter" Version="1.2.1.6" />
     <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.31" />
     <PackageReference Include="MvvmCross.Platforms.Wpf" Version="8.0.2" />
+    <PackageReference Include="Ookii.Dialogs.Wpf" Version="4.0.0" />
   </ItemGroup>
 
   <ItemGroup>
