@@ -26,7 +26,10 @@
         </Grid.RowDefinitions>
         <Menu Grid.Row="0">
             <MenuItem Header="File">
-                <MenuItem Header="Save"
+                <MenuItem Header="Open folder"
+                          InputGestureText="Ctrl+O"
+                          Command="{Binding OpenCommand}" />
+                <MenuItem Header="Save selected sprite"
                           InputGestureText="Ctrl+S"
                           Command="{Binding SaveCommand}" />
             </MenuItem>
@@ -101,6 +104,8 @@
                 <StackPanel Grid.Row="2"
                             Margin="5"
                             HorizontalAlignment="Stretch">
+                    <TextBlock>Sprite name</TextBlock>
+                    <TextBox Text="{Binding SelectedSpriteSheet.Name, UpdateSourceTrigger=LostFocus, Mode=TwoWay}" />
                     <TextBlock>Background offset X</TextBlock>
                     <TextBox Text="{Binding SelectedFrame.X, UpdateSourceTrigger=LostFocus, Mode=TwoWay}" />
                     <TextBlock>Background offset Y</TextBlock>
@@ -176,12 +181,12 @@
                                 <Grid Height="{Binding Height}"
                                       Width="{Binding Width}">
                                     <Grid.Background>
-                                        <ImageBrush ImageSource="{Binding Path=DataContext.SpriteBitmap,
+                                        <ImageBrush ImageSource="{Binding Path=DataContext.SelectedSpriteSheet.SpriteImage,
                                                                           RelativeSource={RelativeSource AncestorType={x:Type ListBox}}}"
                                                     AlignmentX="Left"
                                                     AlignmentY="Top"
                                                     Stretch="None"
-                                                    Viewport="{Binding Path=DataContext.SpriteBitmap,
+                                                    Viewport="{Binding Path=DataContext.SelectedSpriteSheet.SpriteImage,
                                                                        RelativeSource={RelativeSource AncestorType={x:Type ListBox}},
                                                                        Converter={StaticResource ImageToRectConverter}}">
                                             <ImageBrush.Transform>
@@ -323,7 +328,7 @@
                             <ControlTemplate>
                                 <Grid>
                                     <Image x:Name="image"
-                                           Source="{Binding SpriteBitmap}"
+                                           Source="{Binding SelectedSpriteSheet.SpriteImage}"
                                            Height="Auto" Width="Auto"
                                            HorizontalAlignment="Stretch"
                                            VerticalAlignment="Stretch"
