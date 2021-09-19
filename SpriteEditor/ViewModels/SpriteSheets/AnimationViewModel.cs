@@ -16,6 +16,16 @@ namespace SpriteEditor.ViewModels.SpriteSheets
 
         public SpriteSheetViewModel Parent { get; }
 
+        public string Name
+        {
+            get => Model.Name;
+            set
+            {
+                Model.Name = value;
+                RaisePropertyChanged(() => Name);
+            }
+        }
+
         public AnimationViewModel(Animation model, SpriteSheetViewModel parent)
         {
             Model = model;

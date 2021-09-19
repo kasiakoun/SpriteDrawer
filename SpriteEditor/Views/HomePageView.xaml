@@ -1,4 +1,4 @@
-﻿<views:MvxWpfView x:Class="SpriteEditor.Views.HomePageView"
+<views:MvxWpfView x:Class="SpriteEditor.Views.HomePageView"
                  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -66,9 +66,9 @@
                                 <HierarchicalDataTemplate ItemsSource="{Binding Path=Frames}" AlternationCount="100">
                                     <StackPanel>
                                         <TextBlock x:Name="AnimationNameReadonly"
-                                                   Text="{Binding Model.Name}"
+                                                   Text="{Binding Name}"
                                                    PreviewMouseLeftButtonDown="UIElement_OnMouseDoubleClick" />
-                                        <TextBox Text="{Binding Model.Name}"
+                                        <TextBox Text="{Binding Name}"
                                                  KeyDown="UIElement_OnKeyDown"
                                                  IsVisibleChanged="UIElement_OnIsVisibleChanged"
                                                  LostFocus="UIElement_OnLostFocus">
