@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -33,7 +33,7 @@ namespace SpriteEditor.ViewModels
         private MvxCommand _openCommand;
         private MvxCommand _addSpriteCommand;
         private MvxCommand _addAnimationCommand;
-        private MvxCommand _addFrameCommand;
+        private MvxCommand<Point> _addFrameCommand;
 
         public MvxObservableCollection<SpriteSheetViewModel> SpriteSheets
         {
@@ -85,7 +85,11 @@ namespace SpriteEditor.ViewModels
         public AnimationViewModel SelectedAnimation
         {
             get => _selectedAnimation;
-            set => SetProperty(ref _selectedAnimation, value);
+            set
+            {
+                SetProperty(ref _selectedAnimation, value);
+                RaisePropertyChanged(() => AddFrameCommand);
+            }
         }
 
         public FrameViewModel SelectedFrame
@@ -106,7 +110,7 @@ namespace SpriteEditor.ViewModels
         public MvxCommand OpenCommand => _openCommand ?? (new MvxCommand(OpenFolder));
         public MvxCommand AddSpriteCommand => _addSpriteCommand ?? (new MvxCommand(AddSprite));
         public MvxCommand AddAnimationCommand => _addAnimationCommand ?? (new MvxCommand(AddAnimation));
-        public MvxCommand AddFrameCommand => _addFrameCommand ?? (new MvxCommand(AddFrame));
+        public MvxCommand<Point> AddFrameCommand => _addFrameCommand ?? (new MvxCommand<Point>(AddFrame, p => SelectedAnimation != null));
 
         public void OpenFolder()
         {
@@ -226,11 +230,11 @@ namespace SpriteEditor.ViewModels
             RaisePropertyChanged(() => AvailableFrames);
         }
 
-        public void AddFrame()
+        public void AddFrame(Point position)
         {
             if (SelectedAnimation == null) return;
 
-            var emptyFrame = CreateEmptyFrame(SelectedAnimation);
+            var emptyFrame = CreateEmptyFrame(SelectedAnimation, position);
             SelectedAnimation.Frames.Add(emptyFrame);
             RaisePropertyChanged(() => AvailableFrames);
         }
@@ -257,12 +261,15 @@ namespace SpriteEditor.ViewModels
             return new AnimationViewModel(emptyAnimationModel, parent);
         }
 
-        private FrameViewModel CreateEmptyFrame(AnimationViewModel parent)
+        private FrameViewModel CreateEmptyFrame(AnimationViewModel parent, Point position)
         {
+            Debug.WriteLine(position);
             var emptyFrameModel = new Frame
             {
                 Height = 50,
-                Width = 50
+                Width = 50,
+                X = (int)position.X,
+                Y = (int)position.Y
             };
             return new FrameViewModel(emptyFrameModel, parent);
         }
