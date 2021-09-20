@@ -41,6 +41,11 @@ namespace SpriteEditor.ViewModels.SpriteSheets
                 var newFrame = e.NewItems[0] as FrameViewModel;
                 Model.Frames.Add(newFrame.Model);
             }
+            else if (e.Action == NotifyCollectionChangedAction.Remove)
+            {
+                var removedFrame = e.OldItems[0] as FrameViewModel;
+                removedFrame.Parent.Model.Frames.Remove(removedFrame.Model);
+            }
         }
     }
 }

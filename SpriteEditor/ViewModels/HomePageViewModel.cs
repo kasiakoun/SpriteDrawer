@@ -34,6 +34,7 @@ namespace SpriteEditor.ViewModels
         private MvxCommand _addSpriteCommand;
         private MvxCommand _addAnimationCommand;
         private MvxCommand<Point> _addFrameCommand;
+        private MvxCommand _removeFrameCommand;
 
         public MvxObservableCollection<SpriteSheetViewModel> SpriteSheets
         {
@@ -95,7 +96,11 @@ namespace SpriteEditor.ViewModels
         public FrameViewModel SelectedFrame
         {
             get => _selectedFrame;
-            set => SetProperty(ref _selectedFrame, value);
+            set
+            {
+                SetProperty(ref _selectedFrame, value);
+                RaisePropertyChanged(() => RemoveFrameCommand);
+            }
         }
 
         public Point InitialPosition { get; set; }
@@ -111,6 +116,16 @@ namespace SpriteEditor.ViewModels
         public MvxCommand AddSpriteCommand => _addSpriteCommand ?? (new MvxCommand(AddSprite));
         public MvxCommand AddAnimationCommand => _addAnimationCommand ?? (new MvxCommand(AddAnimation));
         public MvxCommand<Point> AddFrameCommand => _addFrameCommand ?? (new MvxCommand<Point>(AddFrame, p => SelectedAnimation != null));
+        public MvxCommand RemoveFrameCommand => _removeFrameCommand ?? (new MvxCommand(RemoveFrame, () => SelectedFrame != null));
+
+        public void RemoveFrame()
+        {
+            if (SelectedFrame == null) return;
+
+            SelectedFrame.Parent.Frames.Remove(SelectedFrame);
+            SelectedFrame = null;
+            RaisePropertyChanged(() => AvailableFrames);
+        }
 
         public void OpenFolder()
         {

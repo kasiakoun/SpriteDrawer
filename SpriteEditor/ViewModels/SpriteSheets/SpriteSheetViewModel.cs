@@ -58,6 +58,11 @@ namespace SpriteEditor.ViewModels.SpriteSheets
                 var newAnimation = e.NewItems[0] as AnimationViewModel;
                 Model.Animations.Add(newAnimation.Model);
             }
+            else if (e.Action == NotifyCollectionChangedAction.Remove)
+            {
+                var removedFrame = e.OldItems[0] as AnimationViewModel;
+                removedFrame.Parent.Model.Animations.Remove(removedFrame.Model);
+            }
         }
     }
 }

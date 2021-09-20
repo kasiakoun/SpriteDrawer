@@ -352,8 +352,11 @@
                         </e:Interaction.Behaviors>
                         <ListBox.ContextMenu>
                             <ContextMenu>
-                                <MenuItem Header="Create frame" Command="{Binding AddFrameCommand}"
+                                <MenuItem Header="Create frame"
+                                          Command="{Binding AddFrameCommand}"
                                           CommandParameter="{Binding LastMousePosition}" />
+                                <MenuItem Header="Remove frame"
+                                          Command="{Binding RemoveFrameCommand}" />
                             </ContextMenu>
                         </ListBox.ContextMenu>
                         <ListBox.Template>

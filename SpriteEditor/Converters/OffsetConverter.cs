@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
+using System.Linq;
 using System.Text;
 using System.Windows;
 using System.Windows.Data;
@@ -15,6 +16,8 @@ namespace SpriteEditor.Converters
 
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
+            if (values.Any(p => p == DependencyProperty.UnsetValue)) return null;
+
             LastInitialPoint = (Point)values[0];
             var offset = ToInt32(values[1]);
 
