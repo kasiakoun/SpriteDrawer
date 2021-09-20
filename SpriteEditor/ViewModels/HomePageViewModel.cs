@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -117,7 +117,7 @@ namespace SpriteEditor.ViewModels
             }
 
             var directories = Directory
-                .GetDirectories(folderDialog.SelectedPath, string.Empty, SearchOption.AllDirectories)
+                .GetDirectories(_lastAssetsPath, string.Empty, SearchOption.AllDirectories)
                 .Select(p => new DirectoryInfo(p))
                 .ToList();
             var spriteSheets = new List<SpriteSheetViewModel>();
@@ -274,6 +274,8 @@ namespace SpriteEditor.ViewModels
                 };
                 var result = fileDialog.ShowDialog();
                 if (!result.GetValueOrDefault(false)) return;
+
+                SelectedSpriteSheet.PathToFile = fileDialog.FileName;
             }
 
             _loader.SaveSpriteSheetByPath(SelectedSpriteSheet.Model, SelectedSpriteSheet.PathToFile);
