@@ -346,6 +346,19 @@
                              MouseMove="ListBox_OnMouseMove"
                              PreviewMouseLeftButtonDown="ListBox_OnPreviewMouseLeftButtonDown"
                              PreviewMouseLeftButtonUp="ListBox_OnPreviewMouseLeftButtonUp">
+                        <e:Interaction.Behaviors>
+                            <behaviors:MousePositionBehavior Position="{Binding LastMousePosition, Mode=OneWayToSource}"
+                                                             Multiplier="{Binding Path=Value, ElementName=ScaleSlider}" />
+                        </e:Interaction.Behaviors>
+                        <ListBox.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem Header="Create frame"
+                                          Command="{Binding AddFrameCommand}"
+                                          CommandParameter="{Binding LastMousePosition}" />
+                                <MenuItem Header="Remove frame"
+                                          Command="{Binding RemoveFrameCommand}" />
+                            </ContextMenu>
+                        </ListBox.ContextMenu>
                         <ListBox.Template>
                             <ControlTemplate>
                                 <Grid>

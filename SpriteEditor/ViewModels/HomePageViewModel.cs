@@ -27,12 +27,14 @@ namespace SpriteEditor.ViewModels
         private AnimationViewModel _selectedAnimation;
 
         private string _lastAssetsPath;
+        private Point _lastMousePosition;
 
         private MvxCommand _saveCommand;
         private MvxCommand _openCommand;
         private MvxCommand _addSpriteCommand;
         private MvxCommand _addAnimationCommand;
-        private MvxCommand _addFrameCommand;
+        private MvxCommand<Point> _addFrameCommand;
+        private MvxCommand _removeFrameCommand;
 
         public MvxObservableCollection<SpriteSheetViewModel> SpriteSheets
         {
@@ -84,22 +86,46 @@ namespace SpriteEditor.ViewModels
         public AnimationViewModel SelectedAnimation
         {
             get => _selectedAnimation;
-            set => SetProperty(ref _selectedAnimation, value);
+            set
+            {
+                SetProperty(ref _selectedAnimation, value);
+                RaisePropertyChanged(() => AddFrameCommand);
+            }
         }
 
         public FrameViewModel SelectedFrame
         {
             get => _selectedFrame;
-            set => SetProperty(ref _selectedFrame, value);
+            set
+            {
+                SetProperty(ref _selectedFrame, value);
+                RaisePropertyChanged(() => RemoveFrameCommand);
+            }
         }
 
         public Point InitialPosition { get; set; }
+
+        public Point LastMousePosition
+        {
+            get => _lastMousePosition;
+            set => SetProperty(ref _lastMousePosition, value);
+        }
 
         public MvxCommand SaveCommand => _saveCommand ?? (new MvxCommand(SaveFile));
         public MvxCommand OpenCommand => _openCommand ?? (new MvxCommand(OpenFolder));
         public MvxCommand AddSpriteCommand => _addSpriteCommand ?? (new MvxCommand(AddSprite));
         public MvxCommand AddAnimationCommand => _addAnimationCommand ?? (new MvxCommand(AddAnimation));
-        public MvxCommand AddFrameCommand => _addFrameCommand ?? (new MvxCommand(AddFrame));
+        public MvxCommand<Point> AddFrameCommand => _addFrameCommand ?? (new MvxCommand<Point>(AddFrame, p => SelectedAnimation != null));
+        public MvxCommand RemoveFrameCommand => _removeFrameCommand ?? (new MvxCommand(RemoveFrame, () => SelectedFrame != null));
+
+        public void RemoveFrame()
+        {
+            if (SelectedFrame == null) return;
+
+            SelectedFrame.Parent.Frames.Remove(SelectedFrame);
+            SelectedFrame = null;
+            RaisePropertyChanged(() => AvailableFrames);
+        }
 
         public void OpenFolder()
         {
@@ -117,7 +143,7 @@ namespace SpriteEditor.ViewModels
             }
 
             var directories = Directory
-                .GetDirectories(folderDialog.SelectedPath, string.Empty, SearchOption.AllDirectories)
+                .GetDirectories(_lastAssetsPath, string.Empty, SearchOption.AllDirectories)
                 .Select(p => new DirectoryInfo(p))
                 .ToList();
             var spriteSheets = new List<SpriteSheetViewModel>();
@@ -219,11 +245,11 @@ namespace SpriteEditor.ViewModels
             RaisePropertyChanged(() => AvailableFrames);
         }
 
-        public void AddFrame()
+        public void AddFrame(Point position)
         {
             if (SelectedAnimation == null) return;
 
-            var emptyFrame = CreateEmptyFrame(SelectedAnimation);
+            var emptyFrame = CreateEmptyFrame(SelectedAnimation, position);
             SelectedAnimation.Frames.Add(emptyFrame);
             RaisePropertyChanged(() => AvailableFrames);
         }
@@ -250,12 +276,15 @@ namespace SpriteEditor.ViewModels
             return new AnimationViewModel(emptyAnimationModel, parent);
         }
 
-        private FrameViewModel CreateEmptyFrame(AnimationViewModel parent)
+        private FrameViewModel CreateEmptyFrame(AnimationViewModel parent, Point position)
         {
+            Debug.WriteLine(position);
             var emptyFrameModel = new Frame
             {
                 Height = 50,
-                Width = 50
+                Width = 50,
+                X = (int)position.X,
+                Y = (int)position.Y
             };
             return new FrameViewModel(emptyFrameModel, parent);
         }
@@ -274,6 +303,8 @@ namespace SpriteEditor.ViewModels
                 };
                 var result = fileDialog.ShowDialog();
                 if (!result.GetValueOrDefault(false)) return;
+
+                SelectedSpriteSheet.PathToFile = fileDialog.FileName;
             }
 
             _loader.SaveSpriteSheetByPath(SelectedSpriteSheet.Model, SelectedSpriteSheet.PathToFile);
