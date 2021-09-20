@@ -1,4 +1,4 @@
-﻿<views:MvxWpfView x:Class="SpriteEditor.Views.HomePageView"
+<views:MvxWpfView x:Class="SpriteEditor.Views.HomePageView"
                  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -346,6 +346,10 @@
                              MouseMove="ListBox_OnMouseMove"
                              PreviewMouseLeftButtonDown="ListBox_OnPreviewMouseLeftButtonDown"
                              PreviewMouseLeftButtonUp="ListBox_OnPreviewMouseLeftButtonUp">
+                        <e:Interaction.Behaviors>
+                            <behaviors:MousePositionBehavior Position="{Binding LastMousePosition, Mode=OneWayToSource}"
+                                                             Multiplier="{Binding Path=Value, ElementName=ScaleSlider}" />
+                        </e:Interaction.Behaviors>
                         <ListBox.Template>
                             <ControlTemplate>
                                 <Grid>

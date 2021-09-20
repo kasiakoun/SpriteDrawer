@@ -27,6 +27,7 @@ namespace SpriteEditor.ViewModels
         private AnimationViewModel _selectedAnimation;
 
         private string _lastAssetsPath;
+        private Point _lastMousePosition;
 
         private MvxCommand _saveCommand;
         private MvxCommand _openCommand;
@@ -94,6 +95,12 @@ namespace SpriteEditor.ViewModels
         }
 
         public Point InitialPosition { get; set; }
+
+        public Point LastMousePosition
+        {
+            get => _lastMousePosition;
+            set => SetProperty(ref _lastMousePosition, value);
+        }
 
         public MvxCommand SaveCommand => _saveCommand ?? (new MvxCommand(SaveFile));
         public MvxCommand OpenCommand => _openCommand ?? (new MvxCommand(OpenFolder));
